@@ -1,0 +1,14 @@
+appId: com.jirodavid.shimacord
+productName: Shimacord
+directories:
+  output: release
+files:
+  - out/**
+  - resources/**
+  - package.json
+win:
+  target: nsis
+  icon: resources/tray.png
+nsis:
+  oneClick: true
+  perMachine: false
