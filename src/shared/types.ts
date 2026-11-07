@@ -12,3 +12,5 @@ export type Look = {
 }
 
 export type LookInput = Omit<Look, 'id'>
+
+export type GameEntry = { appId: string; name: string; iconUrl: string | null }
