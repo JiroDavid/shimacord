@@ -1,6 +1,6 @@
 import { mkdtempSync, readFileSync, writeFileSync, existsSync, readdirSync } from 'fs'
 import { tmpdir } from 'os'
-import { join } from 'path'
+import { dirname, join } from 'path'
 import { LooksStore } from './looks-store'
 import type { LookInput } from '../../shared/types'
 
@@ -63,6 +63,5 @@ test('writes leave no temp file behind and go through rename', () => {
   const file = tmp()
   new LooksStore(file).save(input)
   expect(existsSync(file)).toBe(true)
-  const dir = file.slice(0, file.lastIndexOf('/'))
-  expect(readdirSync(dir)).toEqual(['looks.json'])
+  expect(readdirSync(dirname(file))).toEqual(['looks.json'])
 })
