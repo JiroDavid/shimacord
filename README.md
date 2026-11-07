@@ -43,7 +43,7 @@ Run the installer in `release/`. Discord must be open on the same machine.
 
 ## Discord setup
 
-Custom looks run under Shimacord's own Discord application.
+Custom looks run under Shimacord's own Discord application. This is a one-time step for whoever builds the installer; people who just install the app need nothing. For CI builds, add `SHIMACORD_APP_ID` as a repository variable in GitHub.
 
 1. Open the [Discord developer portal](https://discord.com/developers/applications) and create an application named `Shimacord`.
 2. Copy its Application ID.
