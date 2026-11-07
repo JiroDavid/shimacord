@@ -20,3 +20,22 @@ export type PresenceStatus = {
   lookId: string | null
   message: string | null
 }
+
+export type ShimaApi = {
+  looks: {
+    list(): Promise<Look[]>
+    save(input: LookInput, id?: string): Promise<Look>
+    duplicate(id: string): Promise<Look>
+    remove(id: string): Promise<void>
+  }
+  games: {
+    search(query: string): Promise<GameEntry[]>
+    status(): Promise<'network' | 'cache' | 'none'>
+  }
+  presence: {
+    goLive(id: string): Promise<void>
+    stop(): Promise<void>
+    status(): Promise<PresenceStatus>
+    onStatus(cb: (s: PresenceStatus) => void): () => void
+  }
+}
