@@ -3,5 +3,11 @@
 @tailwind utilities;
 
 body {
-  @apply bg-paper text-ink font-display;
+  @apply font-display text-ink;
+  background-color: #ece5d6;
+  background-image:
+    radial-gradient(rgba(43, 42, 40, 0.045) 1px, transparent 1px),
+    radial-gradient(rgba(184, 101, 44, 0.03) 1px, transparent 1px);
+  background-size: 7px 7px, 11px 11px;
+  background-position: 0 0, 3px 4px;
 }
