@@ -12,7 +12,7 @@
     "build": "electron-vite build",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "dist": "electron-vite build && electron-builder --win"
+    "dist": "electron-vite build && electron-builder --win --publish never"
   },
   "dependencies": {
     "@xhayper/discord-rpc": "^1.5.1",
