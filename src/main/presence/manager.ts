@@ -50,6 +50,15 @@ export class PresenceManager {
     this.set(IDLE)
   }
 
+  async lookUpdated(look: Look): Promise<void> {
+    if (this.current.lookId !== look.id || this.current.state === 'idle') return
+    await this.goLive(look)
+  }
+
+  async lookRemoved(id: string): Promise<void> {
+    if (this.current.lookId === id) await this.stop()
+  }
+
   private async connect(look: Look, request: number): Promise<void> {
     this.set({ state: 'connecting', lookId: look.id, message: null })
     const old = this.client
@@ -60,7 +69,7 @@ export class PresenceManager {
     const client = this.makeClient()
     this.client = client
     try {
-      await client.connect(look.appId ?? SHIMACORD_APP_ID)
+      await client.connect(look.kind === 'game' && look.appId ? look.appId : SHIMACORD_APP_ID)
       if (request !== this.request) {
         await client.disconnect()
         return
@@ -94,6 +103,7 @@ export class PresenceManager {
   }
 
   private waitForDiscord(look: Look, request: number): void {
+    this.cancelRetry()
     this.set({ state: 'discord-missing', lookId: look.id, message: 'Discord not found' })
     this.retryTimer = setTimeout(() => {
       this.retryTimer = null

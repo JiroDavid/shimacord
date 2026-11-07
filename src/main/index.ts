@@ -12,7 +12,8 @@ let win: BrowserWindow | null = null
 let tray: Tray | null = null
 let quitting = false
 
-if (!app.requestSingleInstanceLock()) app.quit()
+const gotLock = app.requestSingleInstanceLock()
+if (!gotLock) app.exit(0)
 
 const showWindow = (): void => {
   if (!win) return
@@ -51,7 +52,7 @@ app.on('before-quit', () => {
   quitting = true
 })
 
-app.whenReady().then(async () => {
+if (gotLock) app.whenReady().then(async () => {
   const dir = app.getPath('userData')
   const store = new LooksStore(join(dir, 'looks.json'))
   const catalog = new GameCatalog(join(dir, 'games.json'), fetch)
@@ -89,6 +90,7 @@ app.whenReady().then(async () => {
   ipcMain.handle('looks:list', () => store.list())
   ipcMain.handle('looks:save', (_, input, id) => {
     const saved = store.save(input, id)
+    if (id && validateLook(input).length === 0) void manager.lookUpdated(saved)
     refreshTray(manager.status())
     return saved
   })
@@ -99,6 +101,7 @@ app.whenReady().then(async () => {
   })
   ipcMain.handle('looks:remove', (_, id) => {
     store.remove(id)
+    void manager.lookRemoved(id)
     refreshTray(manager.status())
   })
   ipcMain.handle('games:search', (_, query: string) => catalog.search(query))

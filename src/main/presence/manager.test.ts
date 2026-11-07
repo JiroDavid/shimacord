@@ -169,3 +169,49 @@ test('stop cancels a pending retry', async () => {
   await vi.advanceTimersByTimeAsync(20000)
   expect(clients).toHaveLength(1)
 })
+
+test('a close event firing twice schedules only one retry', async () => {
+  vi.useFakeTimers()
+  const { clients, manager } = setup()
+  await manager.goLive(look())
+  clients[0].closeCb?.()
+  clients[0].closeCb?.()
+  await vi.advanceTimersByTimeAsync(5000)
+  expect(clients).toHaveLength(2)
+  expect(manager.status().state).toBe('live')
+})
+
+test('a custom look connects under the Shimacord app id even if appId is stale', async () => {
+  const { log, manager } = setup()
+  await manager.goLive(look({ kind: 'custom', appId: '111', gameName: 'Old' }))
+  expect(log[0]).toBe(`connect:${SHIMACORD_APP_ID}`)
+})
+
+test('lookUpdated re-sends the activity when that look is live', async () => {
+  const { log, manager } = setup()
+  await manager.goLive(look())
+  await manager.lookUpdated(look({ details: 'edited' }))
+  expect(log).toContain('activity:edited')
+  expect(manager.status().state).toBe('live')
+})
+
+test('lookUpdated ignores a look that is not live', async () => {
+  const { log, manager } = setup()
+  await manager.goLive(look())
+  await manager.lookUpdated(look({ id: 'other', details: 'edited' }))
+  expect(log).not.toContain('activity:edited')
+})
+
+test('lookRemoved stops presence when the live look is removed', async () => {
+  const { manager } = setup()
+  await manager.goLive(look())
+  await manager.lookRemoved('a')
+  expect(manager.status().state).toBe('idle')
+})
+
+test('lookRemoved leaves presence alone for another look', async () => {
+  const { manager } = setup()
+  await manager.goLive(look())
+  await manager.lookRemoved('zzz')
+  expect(manager.status().state).toBe('live')
+})

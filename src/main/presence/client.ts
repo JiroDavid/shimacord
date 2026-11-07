@@ -1,6 +1,21 @@
 import { Client } from '@xhayper/discord-rpc'
 
-export const SHIMACORD_APP_ID = process.env.SHIMACORD_APP_ID ?? 'REPLACE_WITH_SHIMACORD_APP_ID'
+declare const __SHIMACORD_APP_ID__: string | undefined
+
+export const PLACEHOLDER_APP_ID = 'REPLACE_WITH_SHIMACORD_APP_ID'
+
+export const SHIMACORD_APP_ID =
+  (typeof __SHIMACORD_APP_ID__ !== 'undefined' && __SHIMACORD_APP_ID__) ||
+  process.env.SHIMACORD_APP_ID ||
+  PLACEHOLDER_APP_ID
+
+const COULD_NOT_CONNECT = 2
+const COULD_NOT_FIND_CLIENT = 3
+
+export function isDiscordMissing(err: unknown): boolean {
+  const code = (err as { code?: number } | null)?.code
+  return code === COULD_NOT_CONNECT || code === COULD_NOT_FIND_CLIENT
+}
 
 export type ActivityPayload = {
   details: string
@@ -30,13 +45,27 @@ export class DiscordRpcClient implements PresenceClient {
   private closeCb: (() => void) | null = null
 
   async connect(appId: string): Promise<void> {
+    if (appId === PLACEHOLDER_APP_ID) {
+      throw new Error('Shimacord application ID is not set - see SHIMACORD_APP_ID in the README')
+    }
     const client = new Client({ clientId: appId })
-    client.on('disconnected', () => this.closeCb?.())
+    let closed = false
+    const notifyClosed = (): void => {
+      if (closed) return
+      closed = true
+      this.closeCb?.()
+    }
+    client.on('disconnected', notifyClosed)
     try {
       await client.login()
     } catch (err) {
-      throw new DiscordMissingError(err instanceof Error ? err.message : undefined)
+      await client.destroy().catch(() => undefined)
+      if (isDiscordMissing(err)) throw new DiscordMissingError(err instanceof Error ? err.message : undefined)
+      throw err
     }
+    // the library's own 'disconnected' event is skipped when the socket is already closed
+    const socket = (client.transport as unknown as { socket?: { once(e: string, cb: () => void): void } }).socket
+    socket?.once('close', notifyClosed)
     this.client = client
   }
 

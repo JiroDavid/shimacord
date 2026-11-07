@@ -12,6 +12,7 @@ type Props = {
 export function GoLiveBar({ status, selectedId, valid, onGoLive, onStop }: Props) {
   const { state } = status
   const active = state === 'live' || state === 'discord-missing'
+  const otherLook = active && selectedId !== null && selectedId !== status.lookId
   const canGo = selectedId !== null && valid && state !== 'connecting'
 
   return (
@@ -29,11 +30,12 @@ export function GoLiveBar({ status, selectedId, valid, onGoLive, onStop }: Props
         {state === 'connecting' && <span>Connecting to Discord...</span>}
         {state === 'idle' && <span className="text-ink/70">Pick a look and go live</span>}
       </div>
-      {active ? (
+      {active && (
         <button onClick={onStop} className="rounded-full bg-ink px-5 py-2 text-sm text-paper">
           Stop
         </button>
-      ) : (
+      )}
+      {(!active || otherLook) && (
         <button
           onClick={onGoLive}
           disabled={!canGo}

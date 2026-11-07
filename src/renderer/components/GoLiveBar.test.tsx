@@ -57,3 +57,16 @@ test('Go live is disabled with no selection', () => {
   setup(st('idle'), { selectedId: null })
   expect(screen.getByRole('button', { name: 'Go live' })).toBeDisabled()
 })
+
+test('live with a different look selected still offers Go live', async () => {
+  const onGoLive = vi.fn()
+  render(<GoLiveBar status={st('live')} selectedId="b" valid onGoLive={onGoLive} onStop={vi.fn()} />)
+  await userEvent.click(screen.getByRole('button', { name: 'Go live' }))
+  expect(onGoLive).toHaveBeenCalled()
+  expect(screen.getByRole('button', { name: 'Stop' })).toBeInTheDocument()
+})
+
+test('live with the same look selected shows only Stop', () => {
+  setup(st('live'))
+  expect(screen.queryByRole('button', { name: 'Go live' })).toBeNull()
+})
