@@ -28,6 +28,7 @@ function createWindow(): BrowserWindow {
     minHeight: 560,
     backgroundColor: '#ece5d6',
     autoHideMenuBar: true,
+    icon: join(__dirname, '../../resources/icon.png'),
     webPreferences: {
       preload: join(__dirname, '../preload/index.cjs'),
       contextIsolation: true,
@@ -107,7 +108,9 @@ app.whenReady().then(async () => {
   ipcMain.handle('presence:status', () => manager.status())
 
   win = createWindow()
-  tray = new Tray(nativeImage.createFromPath(join(__dirname, '../../resources/tray.png')))
+  tray = new Tray(nativeImage
+      .createFromPath(join(__dirname, '../../resources/icon.png'))
+      .resize({ width: 32, height: 32 }))
   tray.setToolTip('Shimacord')
   tray.on('click', showWindow)
   refreshTray(manager.status())

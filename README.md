@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="assets/logo.svg" alt="Shimacord" width="160" height="160"/>
+  <img src="resources/icon.png" alt="Shimacord" width="160" height="160"/>
 
   <h1>Shimacord</h1>
   <p><strong>Decide what your Discord profile says you are doing - any game, or your own message</strong></p>

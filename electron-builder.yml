@@ -8,7 +8,7 @@ files:
   - package.json
 win:
   target: nsis
-  icon: resources/tray.png
+  icon: resources/icon.png
 nsis:
   oneClick: true
   perMachine: false
