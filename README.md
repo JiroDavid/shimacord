@@ -47,7 +47,7 @@ Custom looks run under Shimacord's own Discord application.
 
 1. Open the [Discord developer portal](https://discord.com/developers/applications) and create an application named `Shimacord`.
 2. Copy its Application ID.
-3. Set it before building or running: `SHIMACORD_APP_ID=<your id>` in your environment.
+3. Put it in a `.env` file in the project root as `SHIMACORD_APP_ID=<your id>` (or set it in your environment) before running or building.
 
 Game looks use the real game's application ID and need no setup.
 

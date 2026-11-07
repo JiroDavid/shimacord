@@ -1,11 +1,13 @@
-import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
+import { defineConfig, externalizeDepsPlugin, loadEnv } from 'electron-vite'
 import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
 
-export default defineConfig({
+export default defineConfig(({ mode }) => {
+  const appId = process.env.SHIMACORD_APP_ID ?? loadEnv(mode, process.cwd(), '').SHIMACORD_APP_ID ?? ''
+  return {
   main: {
     plugins: [externalizeDepsPlugin()],
-    define: { __SHIMACORD_APP_ID__: JSON.stringify(process.env.SHIMACORD_APP_ID ?? '') }
+    define: { __SHIMACORD_APP_ID__: JSON.stringify(appId) }
   },
   preload: {
     plugins: [externalizeDepsPlugin()],
@@ -18,4 +20,5 @@ export default defineConfig({
     build: { rollupOptions: { input: resolve('src/renderer/index.html') } },
     plugins: [react()]
   }
+}
 })
