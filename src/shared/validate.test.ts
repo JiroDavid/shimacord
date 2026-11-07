@@ -54,3 +54,14 @@ test('game look without appId is an error', () => {
   expect(validateLook(make({ kind: 'game', appId: null })).length).toBeGreaterThan(0)
   expect(validateLook(make({ kind: 'game', appId: '123', gameName: 'G' }))).toEqual([])
 })
+
+test('discord attachment links are rejected with a hint', () => {
+  const url = 'https://cdn.discordapp.com/attachments/1/2/a.jpg?ex=1&is=2&hm=3'
+  expect(validateLook(make({ largeImageUrl: url })).join(' ')).toMatch(/imgur|GitHub/i)
+  expect(validateLook(make({ smallImageUrl: url })).length).toBeGreaterThan(0)
+  expect(validateLook(make({ largeImageUrl: 'https://media.discordapp.net/attachments/1/2/a.png' })).length).toBeGreaterThan(0)
+})
+
+test('other discord cdn urls are not rejected', () => {
+  expect(validateLook(make({ largeImageUrl: 'https://cdn.discordapp.com/app-icons/1/a.png' }))).toEqual([])
+})
