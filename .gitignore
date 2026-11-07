@@ -1,0 +1,16 @@
+# Claude and planning files - never commit or push
+CLAUDE.md
+.claude/
+.superpowers/
+docs/superpowers/
+
+# Dependencies and build output
+node_modules/
+dist/
+out/
+release/
+.vite/
+
+# Env
+.env
+.env.*
